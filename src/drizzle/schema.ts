@@ -1,8 +1,19 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
 
-/* ---------------- NOTES TABLE ---------------- */
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const notes = pgTable("notes", {
   id: serial("id").primaryKey(),
+
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
+
   title: text("title").notNull(),
   content: text("content").notNull(),
 
@@ -10,13 +21,5 @@ export const notes = pgTable("notes", {
   actionItems: text("action_items"),
   keyPoints: text("key_points"),
 
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-/* ---------------- USERS TABLE ---------------- */
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
